@@ -90,7 +90,7 @@ void main() {
 
     col = linearToSrgb(col);
 
-    // In darkness the void creeps in from every edge; in light only thin ragged side strips remain.
+    // In darkness the void creeps in from every edge; in light the screen stays clean.
     float ph = fract(t * 0.85);
     float hb = (exp(-pow((ph - 0.05) * 22.0, 2.0)) + 0.6 * exp(-pow((ph - 0.22) * 22.0, 2.0))) * dread * dread;
     vec2 cc = c * vec2(aspect, 1.0);
@@ -100,9 +100,8 @@ void main() {
     // Never reaches the middle of the screen: at most the outer edge band in the deepest dark.
     float creep = smoothstep(1.2 - 0.30 * dread - 0.05 * hb, 1.6 - 0.10 * dread,
                              edge + (tendrils - 0.5) * 0.30 * (0.3 + dread));
-    float sideX = abs(c.x) + (tendrils - 0.5) * 0.025;
-    float sides = smoothstep(0.46, 0.5, sideX) * 0.6;
-    float shade = max(creep * 0.85, sides);
+    // In light there is no darkening at all; it only appears as the surroundings get dark.
+    float shade = creep * 0.85 * smoothstep(0.05, 0.35, dread);
     col *= 1.0 - clamp(shade * VIGNETTE_STRENGTH, 0.0, 1.0);
     col = mix(col, col * vec3(1.0, 0.75, 0.75), hb * 0.25);
 
