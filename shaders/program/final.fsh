@@ -6,6 +6,7 @@
 const bool colortex0MipmapEnabled = true;
 
 uniform sampler2D colortex0;
+uniform sampler2D depthtex0;
 uniform mat4 gbufferModelViewInverse;
 uniform mat4 gbufferModelView;
 uniform mat4 gbufferProjection;
@@ -44,19 +45,22 @@ void main() {
     float dark = 1.0 - smoothstep(0.08, 0.65, lightEye);
     float dread = clamp((dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
 
-    // Breathing lens - the world slowly inhales at the edges
+    // Breathing lens - only in deep darkness, and only a faint inhale at the very edges
     float breath = sin(t * 0.9) * 0.5 + 0.5;
-    uv += c * r2 * 0.07 * dread * breath;
+    uv += c * r2 * 0.02 * smoothstep(0.5, 1.0, dread) * breath;
 
     // Underwater: thick, slow wobble
     if (isEyeInWater == 1) uv += vec2(sin(uv.y * 18.0 + t * 1.5), cos(uv.x * 14.0 + t * 1.2)) * 0.003;
 
 #ifdef DIM_OVERWORLD
-    // Heat haze boiling around the sun
+    // Heat haze: a faint shimmer of the sky right around the sun disk. Never on blocks,
+    // so the world itself does not swim.
     vec3 ss = sunScreen(sunPosition, gbufferModelViewInverse, gbufferModelView, gbufferProjection);
     float sd = length((uv - ss.xy) * vec2(aspect, 1.0));
-    float haze = HEAT_HAZE * exp(-sd * 3.5) * ss.z;
-    uv += (vec2(vnoise(uv * 45.0 + vec2(0.0, t * 3.0)), vnoise(uv * 45.0 + vec2(t * 2.5, 7.0))) - 0.5) * 0.008 * haze;
+    float skyHere = step(1.0, texture(depthtex0, texcoord).r);
+    float haze = HEAT_HAZE * exp(-sd * 9.0) * ss.z * skyHere;
+    vec2 hz = (vec2(vnoise(uv * 45.0 + vec2(0.0, t * 3.0)), vnoise(uv * 45.0 + vec2(t * 2.5, 7.0))) - 0.5) * 0.003 * haze;
+    if (texture(depthtex0, uv + hz).r >= 1.0) uv += hz; // don't pull block pixels into the sky
 #endif
 
     // Chromatic aberration intensifies with dread
@@ -70,7 +74,7 @@ void main() {
     vec3 bloom = textureLod(colortex0, uv, 2.0).rgb * 0.30 + textureLod(colortex0, uv, 3.0).rgb * 0.25
                + textureLod(colortex0, uv, 4.0).rgb * 0.20 + textureLod(colortex0, uv, 5.0).rgb * 0.15
                + textureLod(colortex0, uv, 6.0).rgb * 0.10;
-    col += max(bloom - 0.8, 0.0) * 0.25 * BLOOM_STRENGTH;
+    col += max(bloom - 1.0, 0.0) * 0.15 * BLOOM_STRENGTH; // gentle: must not smear blocks near the sun
 
     col = aces(col * EXPOSURE);
 
@@ -93,11 +97,12 @@ void main() {
     float edge = length(cc) * 1.5;
     float tendrils = fbm(normalize(cc + 1e-5) * 3.0 + vec2(t * 0.07, -t * 0.05)) * 0.6
                    + fbm(cc * 5.0 - t * 0.05) * 0.4;
-    float creep = smoothstep(1.05 - 0.60 * dread - 0.10 * hb, 1.45 - 0.25 * dread,
-                             edge + (tendrils - 0.5) * 0.45 * (0.3 + dread));
-    float sideX = abs(c.x) + (tendrils - 0.5) * 0.035;
-    float sides = smoothstep(0.435, 0.5, sideX) * 0.8;
-    float shade = max(creep, sides);
+    // Never reaches the middle of the screen: at most the outer edge band in the deepest dark.
+    float creep = smoothstep(1.2 - 0.30 * dread - 0.05 * hb, 1.6 - 0.10 * dread,
+                             edge + (tendrils - 0.5) * 0.30 * (0.3 + dread));
+    float sideX = abs(c.x) + (tendrils - 0.5) * 0.025;
+    float sides = smoothstep(0.46, 0.5, sideX) * 0.6;
+    float shade = max(creep * 0.85, sides);
     col *= 1.0 - clamp(shade * VIGNETTE_STRENGTH, 0.0, 1.0);
     col = mix(col, col * vec3(1.0, 0.75, 0.75), hb * 0.25);
 
