@@ -46,7 +46,7 @@ vec3 skyFull(vec3 d, vec3 s, float t) {
     if (ang < r * 1.02) {
         float x = clamp(ang / r, 0.0, 1.0);
         float limb = sqrt(1.0 - x * x);
-        vec3 disk = mix(vec3(0.55, 0.02, 0.004), vec3(1.0, 0.16, 0.03), limb) * (3.0 + 5.0 * limb);
+        vec3 disk = mix(vec3(0.55, 0.02, 0.004), vec3(1.0, 0.16, 0.03), limb) * (1.2 + 2.0 * limb);
         float spots = smoothstep(0.32, 0.62, fbm(q / r * 3.5 + t * 0.02));
         disk *= mix(0.15, 1.0, spots);
         col = mix(col, disk, 1.0 - smoothstep(0.96, 1.02, x));
@@ -55,7 +55,7 @@ vec3 skyFull(vec3 d, vec3 s, float t) {
     vec2 rd = normalize(q + 1e-6);
     float flare = fbm(rd * 2.5 + vec2(t * 0.11, -t * 0.07));
     float corona = exp(-max(ang - r, 0.0) / (r * (0.25 + 1.6 * flare * flare)));
-    col += vec3(1.0, 0.08, 0.015) * corona * 2.2;
+    col += vec3(1.0, 0.06, 0.012) * corona * 1.2;
     col += vec3(0.7, 0.05, 0.01) * pow(max(mu, 0.0), 30.0) * 0.6;
 
     // Ash clouds drifting across the sky, rims lit blood-red toward the sun
@@ -72,5 +72,5 @@ vec3 skyFull(vec3 d, vec3 s, float t) {
     return col;
 }
 
-vec3 sunLightColor() { return vec3(1.0, 0.26, 0.07) * 2.4; }
+vec3 sunLightColor() { return vec3(1.0, 0.13, 0.03) * 1.6; }
 #endif

@@ -3,9 +3,11 @@
 Shader pack for the **Eternal Sunset** modpack: **Minecraft 1.20.1 Forge + Oculus** (also Iris-compatible).
 Setting: a solar catastrophe. The sun froze on the horizon, bloated and bleeding. Everything away from it drowns in ash and darkness.
 
-![toward the sun](docs/preview_sun.png)
-![away from the sun](docs/preview_dark.png)
-*(Previews: real sky + grading code rendered via WebGL with fake terrain; in-game will differ.)*
+In-game (Forge 1.20.1 + Oculus 1.8.0, software rendering):
+
+![toward the sun](docs/ingame_sun.png)
+![away from the sun](docs/ingame_away.png)
+![side](docs/ingame_side.png)
 
 ## Features
 - **Frozen sun** (`FROZEN_SUN`): sky and light always come from a dying sun pinned near the horizon, regardless of game time
@@ -31,3 +33,4 @@ Zip the `shaders/` folder (so `shaders/` is at the zip root) → `.minecraft/sha
 ## Dev tools
 - `tools/validate.sh` — compile every program with glslangValidator
 - `node tools/preview.js out.png [dread] [yaw]` — headless preview of sky + grading
+- `tools/ingame-test.sh` — real in-game test on llvmpipe (`reload` after edits, `shot out.png "~ ~ ~ yaw pitch"`)

@@ -29,7 +29,10 @@ const float sunPathRotation = -20.0;
 #define GRAIN 1.0 // [0.0 0.5 1.0 2.0]
 #define CHROMATIC 1.0 // [0.0 0.5 1.0 2.0]
 
+// Buffer formats are read by the loader from this comment (not compiled):
+/*
 const int colortex0Format = RGBA16F;
-const int colortex1Format = RGB16;
+const int colortex1Format = RGBA16;
+*/
 
 #endif

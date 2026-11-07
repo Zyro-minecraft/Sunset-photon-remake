@@ -34,7 +34,7 @@ void main() {
         float distToSun = length((texcoord - ss.xy) * vec2(aspect, 1.0));
         float onScreen = 1.0 - smoothstep(0.6, 1.4, length((ss.xy - 0.5) * vec2(aspect, 1.0)));
         float rays = sum / float(N) * exp(-distToSun * 1.6) * onScreen;
-        col += vec3(1.0, 0.16, 0.03) * rays * 2.5 * GODRAYS_STRENGTH;
+        col += vec3(1.0, 0.16, 0.03) * rays * 0.7 * GODRAYS_STRENGTH;
     }
     outColor = vec4(col, 1.0);
 }

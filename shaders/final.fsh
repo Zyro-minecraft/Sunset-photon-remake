@@ -56,7 +56,7 @@ void main() {
     vec3 bloom = textureLod(colortex0, uv, 2.0).rgb * 0.30 + textureLod(colortex0, uv, 3.0).rgb * 0.25
                + textureLod(colortex0, uv, 4.0).rgb * 0.20 + textureLod(colortex0, uv, 5.0).rgb * 0.15
                + textureLod(colortex0, uv, 6.0).rgb * 0.10;
-    col += max(bloom - 0.15, 0.0) * 0.35 * BLOOM_STRENGTH;
+    col += max(bloom - 0.8, 0.0) * 0.25 * BLOOM_STRENGTH;
 
     col = aces(col * EXPOSURE);
 

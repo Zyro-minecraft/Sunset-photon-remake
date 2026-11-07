@@ -20,7 +20,7 @@ def go(p):
             out.append(l)
     return ''.join(out)
 body = go(sys.argv[1])
-print('#version 330 compatibility\n#define RGBA16F 1\n#define RGB16 2\n#line 1')
+print('#version 330 compatibility\n#line 1')
 print(body)
 PY
   if out=$(glslangValidator -S $stage "$tmp/$f" 2>&1); then echo "OK   $f"; else echo "FAIL $f"; echo "$out" | grep -E 'ERROR|WARN'; fail=1; fi

@@ -64,7 +64,7 @@ void main() {
     float sh = ndl > 0.0 ? shadowFactor(vp, n) : 0.0;
     vec3 direct = sunLightColor() * ndl * sh * skyL;
 
-    vec3 ambient = skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25 * pow(skyL, 3.0)
+    vec3 ambient = skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.10 * pow(skyL, 3.0)
                  + vec3(0.02, 0.012, 0.014) * pow(skyL, 4.0);
     // Torches are the only refuge: warm, small radius, nervous flicker.
     float flicker = 0.92 + 0.08 * vnoise(vec2(t * 9.0, 0.0));
