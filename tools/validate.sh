@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Inline Iris-style "/lib/..." includes and compile every program with glslangValidator.
+# Inline Iris-style "/..." includes and compile every program of every dimension with glslangValidator.
 set -u
 cd "$(dirname "$0")/../shaders"
-tmp=$(mktemp -d); fail=0
-for f in *.vsh *.fsh; do
+tmp=$(mktemp -d); fail=0; n=0
+for f in *.vsh *.fsh world-1/*.vsh world-1/*.fsh world1/*.vsh world1/*.fsh; do
   stage=vert; [[ $f == *.fsh ]] && stage=frag
-  python3 -I - "$f" > "$tmp/$f" <<'PY'
+  out_f="$tmp/$(echo "$f" | tr / _)"
+  python3 -I - "$f" > "$out_f" <<'PY'
 import re, sys
 seen = set()
 def go(p):
@@ -19,10 +20,10 @@ def go(p):
         elif not l.startswith('#version'):
             out.append(l)
     return ''.join(out)
-body = go(sys.argv[1])
-print('#version 330 compatibility\n#line 1')
-print(body)
+print('#version 330 compatibility\n' + go(sys.argv[1]))
 PY
-  if out=$(glslangValidator -S $stage "$tmp/$f" 2>&1); then echo "OK   $f"; else echo "FAIL $f"; echo "$out" | grep -E 'ERROR|WARN'; fail=1; fi
+  n=$((n+1))
+  if ! out=$(glslangValidator -S $stage "$out_f" 2>&1); then echo "FAIL $f"; echo "$out" | grep -E 'ERROR' | head -5; fail=1; fi
 done
+[ $fail = 0 ] && echo "all $n programs OK"
 rm -rf "$tmp"; exit $fail

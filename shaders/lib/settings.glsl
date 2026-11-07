@@ -10,13 +10,25 @@ const float sunPathRotation = -20.0;
 
 // ---- The frozen sun ----
 #define FROZEN_SUN // Sky/light always use a dying sun stuck on the horizon
-#define SUN_ELEVATION 0.06 // [0.0 0.03 0.06 0.1 0.15 0.2] radians above horizon
-#define SUN_SIZE 0.08 // [0.03 0.05 0.08 0.12 0.16] angular radius (vanilla ~0.01)
+#define SUN_ELEVATION 0.06 // [0.0 0.03 0.06 0.1 0.15 0.2]
+#define SUN_SIZE 0.08 // [0.03 0.05 0.08 0.12 0.16]
 #define GODRAYS_STRENGTH 1.0 // [0.0 0.5 1.0 1.5 2.0]
+#define GODRAY_SAMPLES 32 // [16 24 32 48 64]
 
 // ---- Atmosphere ----
 #define FOG_DENSITY 1.0 // [0.25 0.5 1.0 1.5 2.0 3.0]
 #define MIN_LIGHT 0.08 // [0.0 0.02 0.04 0.08 0.12 0.2]
+#define ASH_PARTICLES // Drifting ash and glowing embers in the air
+#define ASH_DENSITY 1.0 // [0.5 1.0 1.5 2.0]
+
+// ---- World ----
+#define SSAO // Contact shadows in corners and crevices
+#define AO_STRENGTH 1.0 // [0.5 1.0 1.5]
+#define WAVING_PLANTS // Grass and leaves tremble in the hot wind
+#define WAVE_STRENGTH 1.0 // [0.0 0.5 1.0 1.5 2.0]
+#define WATER_STYLE 0 // [0 1 2] 0 = blood, 1 = black oil, 2 = rusty ash water
+#define EMISSIVE_STRENGTH 1.0 // [0.0 0.5 1.0 1.5 2.0 3.0]
+#define HELD_LIGHT // Torches in hand light the world around you
 
 // ---- Dread / sanity ----
 #define DREAD_STRENGTH 1.0 // [0.0 0.5 1.0 1.5]
@@ -33,6 +45,22 @@ const float sunPathRotation = -20.0;
 /*
 const int colortex0Format = RGBA16F;
 const int colortex1Format = RGBA16;
+const int colortex2Format = RGBA8;
+const int colortex3Format = R8;
+const vec4 colortex3ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
+const vec4 colortex2ClearColor = vec4(0.0, 0.0, 0.0, 0.0);
 */
+
+// Material ids written to colortex2.r
+#define MAT_NONE     0
+#define MAT_WATER    1
+#define MAT_GLOW     2   // bright texels glow (torches, lanterns, glowstone...)
+#define MAT_LAVA     3   // whole surface glows
+#define MAT_ENTITY   4
+#define MAT_HAND     5
+#define MAT_WEATHER  6
+#define MAT_PLANT    7
+#define MAT_LEAVES   8
+#define MAT_PARTICLE 9
 
 #endif

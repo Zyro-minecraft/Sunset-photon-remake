@@ -4,10 +4,12 @@
 set -e
 MC=${MC:-/root/mc}; REPO=$(cd "$(dirname "$0")/.." && pwd)
 if [ "${1:-}" = shot ]; then
-  echo "tp Wanderer $3" > $MC/server/cmd.fifo; sleep 12; DISPLAY=:99 import -window root "$2"; exit; fi
+  echo "execute as Wanderer at @s run tp @s $3" > $MC/server/cmd.fifo; sleep ${4:-12}; DISPLAY=:99 import -window root "$2"; exit; fi
 if [ "${1:-}" = reload ]; then
   rm -rf $MC/shaderpacks/EternalSunset/shaders && cp -r $REPO/shaders $MC/shaderpacks/EternalSunset/
-  DISPLAY=:99 xdotool key --window "$(DISPLAY=:99 xdotool search --name Minecraft | head -1)" r; exit; fi
+  N=$(wc -l < $MC/client.out)
+  DISPLAY=:99 xdotool key --window "$(DISPLAY=:99 xdotool search --name Minecraft | head -1)" r
+  sleep ${2:-30}; tail -n +$N $MC/client.out | grep -E "ERROR|Falling back|failed to load|CHAT" | grep -viE "authlib|OpenAL" | head -8; exit; fi
 apt-get install -y mesa-utils xdotool imagemagick xvfb >/dev/null; pip install -q portablemc
 mkdir -p $MC/{mods,shaderpacks/EternalSunset,config,server}; cd $MC
 portablemc --main-dir $MC start forge:1.20.1 --dry >/dev/null
