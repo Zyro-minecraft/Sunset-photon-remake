@@ -33,7 +33,7 @@ void main() {
 
     // Dread grows in darkness (no sky light reaching the eyes) and under the Darkness effect.
     float dark = 1.0 - clamp(float(eyeBrightnessSmooth.y) / 240.0, 0.0, 1.0);
-    float dread = clamp((0.35 + 0.65 * dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
+    float dread = clamp((0.15 + 0.85 * dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
 
     // Breathing lens - the world slowly inhales at the edges
     float breath = sin(t * 0.9) * 0.5 + 0.5;
@@ -64,8 +64,7 @@ void main() {
     float l = luma(col);
     float redness = clamp((col.r - max(col.g, col.b)) * 3.0, 0.0, 1.0);
     col = mix(vec3(l), col, mix(0.30, 1.15, redness));
-    col = max(col - 0.004, 0.0) / 0.996;
-    col = pow(col, vec3(1.12));
+    col = pow(max(col, 0.0), vec3(1.04)); // saturation boost can push channels negative -> NaN
     col *= mix(vec3(1.0), vec3(1.05, 0.92, 0.92), 1.0 - smoothstep(0.0, 0.25, l));
 
     col = linearToSrgb(col);
@@ -77,8 +76,8 @@ void main() {
     float edge = length(cc) * 1.5;
     float tendrils = fbm(normalize(cc + 1e-5) * 3.0 + vec2(t * 0.07, -t * 0.05)) * 0.6
                    + fbm(cc * 5.0 - t * 0.05) * 0.4;
-    float creep = smoothstep(0.75 - 0.30 * dread - 0.08 * hb, 1.25, edge + (tendrils - 0.5) * 0.45 * dread);
-    col *= 1.0 - clamp(creep * VIGNETTE_STRENGTH, 0.0, 1.0);
+    float creep = smoothstep(1.0 - 0.35 * dread - 0.08 * hb, 1.45, edge + (tendrils - 0.5) * 0.45 * dread);
+    col *= 1.0 - clamp(creep * 0.85 * VIGNETTE_STRENGTH, 0.0, 1.0);
     col = mix(col, col * vec3(1.0, 0.75, 0.75), hb * 0.25);
 
     // Rare flicker - something is wrong

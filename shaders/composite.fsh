@@ -64,8 +64,8 @@ void main() {
     float sh = ndl > 0.0 ? shadowFactor(vp, n) : 0.0;
     vec3 direct = sunLightColor() * ndl * sh * skyL;
 
-    vec3 ambient = skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.10 * pow(skyL, 3.0)
-                 + vec3(0.02, 0.012, 0.014) * pow(skyL, 4.0);
+    vec3 ambient = skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25 * pow(skyL, 2.0)
+                 + vec3(0.09, 0.05, 0.05) * pow(skyL, 2.0);
     // Torches are the only refuge: warm, small radius, nervous flicker.
     float flicker = 0.92 + 0.08 * vnoise(vec2(t * 9.0, 0.0));
     vec3 blockLight = vec3(1.0, 0.48, 0.18) * pow(blockL, 4.5) * 2.2 * flicker;
@@ -74,10 +74,10 @@ void main() {
 
     // Choking ash fog: black away from the sun, smoldering red toward it.
     float dist = length(vp);
-    float fog = 1.0 - exp(-dist * 0.012 * FOG_DENSITY);
+    float fog = 1.0 - exp(-dist * 0.006 * FOG_DENSITY);
     fog = max(fog, smoothstep(0.6, 1.0, dist / far));
     vec3 fogDir = normalize(vec3(dirWorld.x, clamp(dirWorld.y, 0.0, 0.1), dirWorld.z));
-    vec3 fogC = skyBase(fogDir, sunW) * 0.45;
+    vec3 fogC = skyBase(fogDir, sunW) * 0.6;
     color = mix(color, fogC, clamp(fog, 0.0, 1.0));
 
     outColor = vec4(color, albedoA.a);

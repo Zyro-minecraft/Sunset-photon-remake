@@ -21,12 +21,12 @@ vec3 skyBase(vec3 d, vec3 s) {
     float toward = dot(d, s) * 0.5 + 0.5;
     float up = clamp(d.y, 0.0, 1.0);
     float sunSide = pow(toward, 6.0);
-    vec3 zen = vec3(0.010, 0.005, 0.008);
+    vec3 zen = vec3(0.035, 0.012, 0.016);
     vec3 mid = vec3(0.09, 0.008, 0.006);
     vec3 hor = vec3(0.60, 0.045, 0.010);
     vec3 col = mix(zen, mid, exp(-up * 2.5) * (0.25 + 0.75 * sunSide));
     col += hor * exp(-up * 6.0) * (0.05 + 0.95 * sunSide * sunSide);
-    col = mix(col, vec3(0.006, 0.002, 0.002), smoothstep(0.0, 0.15, -d.y));
+    col = mix(col, vec3(0.02, 0.008, 0.008), smoothstep(0.0, 0.15, -d.y));
     return col;
 }
 
@@ -65,7 +65,7 @@ vec3 skyFull(vec3 d, vec3 s, float t) {
         float n2 = fbm(uv * 2.3 - t * 0.01);
         float cover = smoothstep(0.30, 0.70, n * 0.7 + n2 * 0.4);
         vec3 lit = vec3(0.7, 0.05, 0.01) * pow(toward, 10.0) * pow(1.0 - n2, 2.0);
-        vec3 cloud = vec3(0.003, 0.0015, 0.0015) + lit;
+        vec3 cloud = vec3(0.014, 0.006, 0.006) + lit;
         float nearSun = exp(-max(ang - r, 0.0) * 25.0);
         col = mix(col, cloud, cover * smoothstep(0.0, 0.08, d.y) * (0.95 - 0.5 * nearSun));
     }
