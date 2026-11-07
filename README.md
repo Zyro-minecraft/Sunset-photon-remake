@@ -53,7 +53,8 @@ vanilla Darkness effect:
   `darknessFactor` and the dread effects grow.
 
 ## Install
-Zip the `shaders/` folder (so `shaders/` is at the zip root) → `.minecraft/shaderpacks/`.
+Download `dist/EternalSunset.zip` (or zip the `shaders/` folder yourself so `shaders/` is at the
+zip root) → `.minecraft/shaderpacks/`. Requires Oculus + Embeddium on Forge 1.20.1.
 
 ## Layout
 - `shaders/program/` — program bodies; `shaders/lib/` — shared code
