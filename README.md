@@ -13,7 +13,8 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 | ![rain](docs/rain.png) Ash rain swallows the sun | ![underwater](docs/underwater.png) Under the blood |
 | ![cave](docs/cave_torch.png) Cave, torch in hand | ![spider](docs/spider.png) Total darkness |
 | ![nether](docs/nether.png) Nether | ![end](docs/end.png) The End: eclipsed sun |
-| ![snow](docs/snow.png) Ash snow | ![menu](docs/menu.png) Settings (EN/RU) |
+| ![snow](docs/snow.png) Ash snow | ![reflections](docs/reflections.png) Ruins mirrored in the blood sea |
+| ![menu](docs/menu.png) Settings (EN/RU) | |
 
 ## Features
 **The dead sun**
@@ -24,7 +25,8 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 **World**
 - Black ash sky with drifting clouds lit red only toward the sun; drifting ash flakes and glowing embers
   (outdoors and in the Nether, not in caves)
-- Blood / black oil / rusty ash water (`WATER_STYLE`) with slow viscous waves and a sun path on the surface
+- Blood / black oil / rusty ash water (`WATER_STYLE`) with slow viscous waves, a sun path
+  on the surface and screen-space reflections of shores and ruins
 - Long red shadows (soft Vogel filter), SSAO, near-zero ambient: torches are the only refuge
 - Torch in hand lights the world around you; glowing blocks, lava, spider/enderman eyes
 - Grass and leaves tremble in the hot wind (shadows follow); thin foliage glows when backlit
