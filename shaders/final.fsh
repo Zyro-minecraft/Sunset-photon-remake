@@ -31,9 +31,13 @@ void main() {
     vec2 c = uv - 0.5;
     float r2 = dot(c, c);
 
-    // Dread grows in darkness (no sky light reaching the eyes) and under the Darkness effect.
-    float dark = 1.0 - clamp(float(eyeBrightnessSmooth.y) / 240.0, 0.0, 1.0);
-    float dread = clamp((0.15 + 0.85 * dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
+    // Dread grows in darkness and under the Darkness effect. Sky light AND torch light count as
+    // light, so a campfire in a cave pushes the darkness back.
+    float skyEye = float(eyeBrightnessSmooth.y) / 240.0;
+    float blockEye = float(eyeBrightnessSmooth.x) / 240.0;
+    float lightEye = max(skyEye, blockEye * 0.85);
+    float dark = 1.0 - smoothstep(0.08, 0.65, lightEye);
+    float dread = clamp((dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
 
     // Breathing lens - the world slowly inhales at the edges
     float breath = sin(t * 0.9) * 0.5 + 0.5;
@@ -76,8 +80,14 @@ void main() {
     float edge = length(cc) * 1.5;
     float tendrils = fbm(normalize(cc + 1e-5) * 3.0 + vec2(t * 0.07, -t * 0.05)) * 0.6
                    + fbm(cc * 5.0 - t * 0.05) * 0.4;
-    float creep = smoothstep(1.0 - 0.35 * dread - 0.08 * hb, 1.45, edge + (tendrils - 0.5) * 0.45 * dread);
-    col *= 1.0 - clamp(creep * 0.85 * VIGNETTE_STRENGTH, 0.0, 1.0);
+    // In darkness: the void creeps in from every edge toward the centre.
+    float creep = smoothstep(1.05 - 0.60 * dread - 0.10 * hb, 1.45 - 0.25 * dread,
+                             edge + (tendrils - 0.5) * 0.45 * (0.3 + dread));
+    // In light: only thin ragged strips of darkness hugging the left/right sides.
+    float sideX = abs(c.x) + (tendrils - 0.5) * 0.035;
+    float sides = smoothstep(0.435, 0.5, sideX) * 0.8;
+    float shade = max(creep, sides);
+    col *= 1.0 - clamp(shade * VIGNETTE_STRENGTH, 0.0, 1.0);
     col = mix(col, col * vec3(1.0, 0.75, 0.75), hb * 0.25);
 
     // Rare flicker - something is wrong

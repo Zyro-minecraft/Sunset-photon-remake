@@ -70,7 +70,9 @@ void main() {
     float flicker = 0.92 + 0.08 * vnoise(vec2(t * 9.0, 0.0));
     vec3 blockLight = vec3(1.0, 0.48, 0.18) * pow(blockL, 4.5) * 2.2 * flicker;
 
-    vec3 color = albedo * (direct + ambient + blockLight + MIN_LIGHT);
+    // Minimum light mostly for dark places, so silhouettes stay readable in caves.
+    vec3 minLight = MIN_LIGHT * vec3(1.0, 0.82, 0.82) * (1.0 - 0.75 * skyL);
+    vec3 color = albedo * (direct + ambient + blockLight + minLight);
 
     // Choking ash fog: black away from the sun, smoldering red toward it.
     float dist = length(vp);

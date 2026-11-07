@@ -9,6 +9,12 @@ In-game (Forge 1.20.1 + Oculus 1.8.0, software rendering):
 ![away from the sun](docs/ingame_away.png)
 ![side](docs/ingame_side.png)
 
+Dread by light level: total darkness / one distant torch / torches and campfire:
+
+![dark](docs/ingame_dark.png)
+![dim](docs/ingame_dim.png)
+![torch](docs/ingame_torch.png)
+
 ## Features
 - **Frozen sun** (`FROZEN_SUN`): sky and light always come from a dying sun pinned near the horizon, regardless of game time
 - Huge blood-red sun: sunspots, limb darkening, writhing corona/flares
@@ -16,8 +22,9 @@ In-game (Forge 1.20.1 + Oculus 1.8.0, software rendering):
 - Long red shadows, near-zero ambient; torches are the only refuge (small radius, flicker)
 - Choking ash fog: smoldering red toward the sun, black everywhere else
 - Screen-space god rays from the sun
-- **Dread system**: grows in darkness (no sky light) and under the vanilla Darkness effect
-  - creeping darkness tendrils at the screen edges, pulsing with a heartbeat
+- **Dread system**: driven by light around the player (sky light or torches) and the vanilla Darkness effect
+  - in light: only thin ragged dark strips on the screen sides
+  - in darkness: the void creeps in from every edge toward the centre, pulsing with a heartbeat
   - breathing lens distortion, chromatic aberration, film grain, rare flicker
 - Heat haze boiling around the sun, bloom, ACES + grading that bleeds all colour except red
 

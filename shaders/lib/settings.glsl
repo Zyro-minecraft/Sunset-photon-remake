@@ -16,7 +16,7 @@ const float sunPathRotation = -20.0;
 
 // ---- Atmosphere ----
 #define FOG_DENSITY 1.0 // [0.25 0.5 1.0 1.5 2.0 3.0]
-#define MIN_LIGHT 0.02 // [0.0 0.005 0.01 0.02 0.04 0.08]
+#define MIN_LIGHT 0.08 // [0.0 0.02 0.04 0.08 0.12 0.2]
 
 // ---- Dread / sanity ----
 #define DREAD_STRENGTH 1.0 // [0.0 0.5 1.0 1.5]
