@@ -45,6 +45,12 @@ void main() {
     float dark = 1.0 - smoothstep(0.08, 0.65, lightEye);
     float dread = clamp((dark + darknessFactor) * DREAD_STRENGTH, 0.0, 1.6);
 
+    // Also react to how dark the picture really is (shadows, dense forest, the side away from
+    // the sun), not only to light at the player's eyes. Measured in display brightness.
+    float sceneL = luma(linearToSrgb(aces(textureLod(colortex0, vec2(0.5), 10.0).rgb * EXPOSURE)));
+    float sceneDark = 1.0 - smoothstep(0.10, 0.24, sceneL);
+    dread = max(dread, clamp(sceneDark * 0.8 * DREAD_STRENGTH, 0.0, 1.6));
+
     // Breathing lens - only in deep darkness, and only a faint inhale at the very edges
     float breath = sin(t * 0.9) * 0.5 + 0.5;
     uv += c * r2 * 0.02 * smoothstep(0.5, 1.0, dread) * breath;
@@ -98,10 +104,15 @@ void main() {
     float tendrils = fbm(normalize(cc + 1e-5) * 3.0 + vec2(t * 0.07, -t * 0.05)) * 0.6
                    + fbm(cc * 5.0 - t * 0.05) * 0.4;
     // Never reaches the middle of the screen: at most the outer edge band in the deepest dark.
-    float creep = smoothstep(1.2 - 0.30 * dread - 0.05 * hb, 1.6 - 0.10 * dread,
-                             edge + (tendrils - 0.5) * 0.30 * (0.3 + dread));
-    // In light there is no darkening at all; it only appears as the surroundings get dark.
-    float shade = creep * 0.85 * smoothstep(0.05, 0.35, dread);
+    // Each part of the edge darkens by how dark that part of the picture is: a dark forest on
+    // one side sinks into the void while the bright sky by the sun stays clean.
+    float localL = luma(linearToSrgb(aces(textureLod(colortex0, texcoord, 5.0).rgb * EXPOSURE)));
+    float localDark = 1.0 - smoothstep(0.09, 0.22, localL);
+    float dreadHere = clamp(max(dread * mix(0.5, 1.0, localDark), localDark * DREAD_STRENGTH), 0.0, 1.6);
+    float creep = smoothstep(1.2 - 0.30 * dreadHere - 0.05 * hb, 1.6 - 0.10 * dreadHere,
+                             edge + (tendrils - 0.5) * 0.30 * (0.3 + dreadHere));
+    // In light there is no darkening at all; it only appears where the picture gets dark.
+    float shade = creep * 0.85 * smoothstep(0.05, 0.35, dreadHere);
     col *= 1.0 - clamp(shade * VIGNETTE_STRENGTH, 0.0, 1.0);
     col = mix(col, col * vec3(1.0, 0.75, 0.75), hb * 0.25);
 

@@ -38,8 +38,9 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 - Rain and snow as translucent ash sheets; overcast swallows the sun, fog thickens
 - Hand, glass, block entities, particles, enchantment glint, entity hurt flash handled separately
 
-**Dread system** — driven by light around the player (sky, nearby torches, torch in hand) and the
-vanilla Darkness effect:
+**Dread system** — driven by light around the player (sky, nearby torches, torch in hand), by how
+dark the picture actually is (shadows, dense forest, the side away from the sun) and by the vanilla
+Darkness effect. Each part of the screen edge darkens by how dark that part of the picture is:
 - in light: only thin ragged dark strips on the screen sides
 - in darkness: the void creeps in from every edge toward the centre, pulsing with a heartbeat;
   breathing lens, chromatic aberration, heavier grain, rare flicker
