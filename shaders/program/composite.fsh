@@ -143,7 +143,7 @@ void main() {
         if (foliage) direct *= mix(vec3(1.0), vec3(1.3, 0.8, 0.7), 0.5); // red translucency
         // Under tree crowns sky light drops only by 1-2 levels in vanilla; exaggerate that so a
         // forest feels starved of light while an open field is unchanged (skyL = 1).
-        float canopy = pow(skyL, 2.0 + 10.0 * CANOPY_DARKNESS);
+        float canopy = pow(skyL, 2.0 + 7.0 * CANOPY_DARKNESS);
         ambient = (skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25
                 + vec3(0.09, 0.05, 0.05) * (1.0 + 0.5 * rainStrength)) * canopy;
 #elif defined DIM_NETHER
