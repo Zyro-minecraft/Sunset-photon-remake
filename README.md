@@ -1,43 +1,66 @@
 # Eternal Sunset — shader pack
 
-Shader pack for the **Eternal Sunset** modpack: **Minecraft 1.20.1 Forge + Oculus** (also Iris-compatible).
-Setting: a solar catastrophe. The sun froze on the horizon, bloated and bleeding. Everything away from it drowns in ash and darkness.
+Shader pack for the **Eternal Sunset** modpack: **Minecraft 1.20.1 Forge + Oculus** (Iris-compatible).
+Setting: a solar catastrophe. The sun froze on the horizon, bloated and bleeding. Everything away
+from it drowns in ash and darkness, and the darkness gnaws at the player's mind.
 
-In-game (Forge 1.20.1 + Oculus 1.8.0, software rendering):
+All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddium, software rendering).
 
-![toward the sun](docs/ingame_sun.png)
-![away from the sun](docs/ingame_away.png)
-![side](docs/ingame_side.png)
-
-Dread by light level: total darkness / one distant torch / torches and campfire:
-
-![dark](docs/ingame_dark.png)
-![dim](docs/ingame_dim.png)
-![torch](docs/ingame_torch.png)
+| | |
+|---|---|
+| ![sea](docs/sea.png) Blood sea under the dead sun | ![forest](docs/forest.png) Forest silhouettes, god rays |
+| ![village](docs/village.png) Village away from the sun | ![mobs](docs/mobs.png) Mobs cast long shadows |
+| ![rain](docs/rain.png) Ash rain swallows the sun | ![underwater](docs/underwater.png) Under the blood |
+| ![cave](docs/cave_torch.png) Cave, torch in hand | ![spider](docs/spider.png) Total darkness |
+| ![nether](docs/nether.png) Nether | ![end](docs/end.png) The End: eclipsed sun |
+| ![snow](docs/snow.png) Ash snow | ![menu](docs/menu.png) Settings (EN/RU) |
 
 ## Features
-- **Frozen sun** (`FROZEN_SUN`): sky and light always come from a dying sun pinned near the horizon, regardless of game time
-- Huge blood-red sun: sunspots, limb darkening, writhing corona/flares
-- Ash clouds drifting across a black sky, rims lit red only near the sun
-- Long red shadows, near-zero ambient; torches are the only refuge (small radius, flicker)
-- Choking ash fog: smoldering red toward the sun, black everywhere else
-- Screen-space god rays from the sun
-- **Dread system**: driven by light around the player (sky light or torches) and the vanilla Darkness effect
-  - in light: only thin ragged dark strips on the screen sides
-  - in darkness: the void creeps in from every edge toward the centre, pulsing with a heartbeat
-  - breathing lens distortion, chromatic aberration, film grain, rare flicker
-- Heat haze boiling around the sun, bloom, ACES + grading that bleeds all colour except red
+**The dead sun**
+- `FROZEN_SUN`: sky and light always come from a sun pinned near the horizon, regardless of game time
+- Huge blood-red disk with sunspots, limb darkening and a writhing corona; heat haze; screen-space god rays
+- If the modpack does not freeze time, shadows from the "real" sun fade out instead of mismatching
 
-## Modpack integration (important)
-- Freeze time so shadows match the frozen sun: `/gamerule doDaylightCycle false` and `/time set 12600`
-  (via KubeJS on world load, or a default-gamerules mod).
+**World**
+- Black ash sky with drifting clouds lit red only toward the sun; drifting ash flakes and glowing embers
+  (outdoors and in the Nether, not in caves)
+- Blood / black oil / rusty ash water (`WATER_STYLE`) with slow viscous waves and a sun path on the surface
+- Long red shadows (soft Vogel filter), SSAO, near-zero ambient: torches are the only refuge
+- Torch in hand lights the world around you; glowing blocks, lava, spider/enderman eyes
+- Grass and leaves tremble in the hot wind (shadows follow); thin foliage glows when backlit
+- Colour drains from the world except red
+
+**Every situation**
+- Nether: lava-lit ambient, smouldering haze, embers; End: void sky with an eclipsed black sun
+- Underwater (blood murk), in lava, in powder snow, Blindness / Darkness effects, Night Vision
+- Rain and snow as translucent ash sheets; overcast swallows the sun, fog thickens
+- Hand, glass, block entities, particles, enchantment glint, entity hurt flash handled separately
+
+**Dread system** — driven by light around the player (sky, nearby torches, torch in hand) and the
+vanilla Darkness effect:
+- in light: only thin ragged dark strips on the screen sides
+- in darkness: the void creeps in from every edge toward the centre, pulsing with a heartbeat;
+  breathing lens, chromatic aberration, heavier grain, rare flicker
+
+**Settings** — profiles Low / Medium / High / Ultra, all options named in English and Russian.
+
+## Modpack integration
+- Freeze time so shadows match the frozen sun: `/gamerule doDaylightCycle false`, `/time set 12600`
+  (KubeJS on world load, or a default-gamerules mod).
 - Sanity hook: give the player the vanilla **Darkness** effect when sanity is low — the shader reads
-  `darknessFactor` and amplifies the dread effects.
+  `darknessFactor` and the dread effects grow.
 
 ## Install
 Zip the `shaders/` folder (so `shaders/` is at the zip root) → `.minecraft/shaderpacks/`.
 
+## Layout
+- `shaders/program/` — program bodies; `shaders/lib/` — shared code
+- `shaders/*.vsh|fsh`, `shaders/world-1/`, `shaders/world1/` — tiny per-dimension wrappers,
+  generated by `tools/gen_wrappers.py` (run it after adding a program)
+- `shaders/block.properties` — material ids (water, plants, leaves, glowing blocks, lava)
+
 ## Dev tools
-- `tools/validate.sh` — compile every program with glslangValidator
-- `node tools/preview.js out.png [dread] [yaw]` — headless preview of sky + grading
-- `tools/ingame-test.sh` — real in-game test on llvmpipe (`reload` after edits, `shot out.png "~ ~ ~ yaw pitch"`)
+- `tools/validate.sh` — compile every program of every dimension with glslangValidator
+- `tools/ingame-test.sh` — real in-game test on llvmpipe; `reload` after edits (prints load errors),
+  `shot out.png "~ ~ ~ yaw pitch"` for a screenshot
+- `node tools/preview.js out.png [dread] [yaw]` — quick headless preview of sky + grading

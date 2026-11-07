@@ -30,6 +30,7 @@ uniform float darknessFactor;
 uniform float nightVision;
 uniform int heldBlockLightValue;
 uniform int heldBlockLightValue2;
+uniform ivec2 eyeBrightnessSmooth;
 
 in vec2 texcoord;
 
@@ -218,7 +219,12 @@ void main() {
 #ifdef ASH_PARTICLES
 #ifndef DIM_END
     if (isEyeInWater == 0) {
-        vec4 ash = ashParticles(cameraPosition, dirWorld, min(d2, 30.0), t, ASH_DENSITY);
+#ifdef DIM_NETHER
+        float ashAmount = 1.0;
+#else
+        float ashAmount = smoothstep(0.1, 0.6, float(eyeBrightnessSmooth.y) / 240.0); // none indoors / in caves
+#endif
+        vec4 ash = ashParticles(cameraPosition, dirWorld, min(d2, 30.0), t, ASH_DENSITY) * ashAmount;
 #ifdef DIM_NETHER
         vec3 ashCol = srgbToLinear(fogColor) * 0.25;
 #else

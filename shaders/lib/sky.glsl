@@ -72,5 +72,5 @@ vec3 skyFull(vec3 d, vec3 s, float t) {
     return col;
 }
 
-vec3 sunLightColor() { return vec3(1.0, 0.13, 0.03) * 1.6; }
+vec3 sunLightColor() { return vec3(1.0, 0.075, 0.018) * 1.2; }
 #endif
