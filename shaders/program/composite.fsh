@@ -141,8 +141,11 @@ void main() {
         if (isHand) sh = skyL;
         direct = sunLightColor() * ndl * sh * skyL * (1.0 - 0.8 * rainStrength);
         if (foliage) direct *= mix(vec3(1.0), vec3(1.3, 0.8, 0.7), 0.5); // red translucency
-        ambient = skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25 * pow(skyL, 2.0)
-                + vec3(0.09, 0.05, 0.05) * pow(skyL, 2.0) * (1.0 + 0.5 * rainStrength);
+        // Under tree crowns sky light drops only by 1-2 levels in vanilla; exaggerate that so a
+        // forest feels starved of light while an open field is unchanged (skyL = 1).
+        float canopy = pow(skyL, 2.0 + 10.0 * CANOPY_DARKNESS);
+        ambient = (skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25
+                + vec3(0.09, 0.05, 0.05) * (1.0 + 0.5 * rainStrength)) * canopy;
 #elif defined DIM_NETHER
         ambient = srgbToLinear(fogColor) * 2.2 + vec3(0.07, 0.025, 0.015);
 #else

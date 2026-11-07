@@ -18,7 +18,8 @@ const float sunPathRotation = -20.0;
 // ---- Atmosphere ----
 #define FOG_DENSITY 1.0 // [0.25 0.5 1.0 1.5 2.0 3.0]
 #define MIN_LIGHT 0.08 // [0.0 0.02 0.04 0.08 0.12 0.2]
-#define ASH_PARTICLES // Drifting ash and glowing embers in the air
+#define CANOPY_DARKNESS 1.0 // [0.0 0.5 1.0 1.5 2.0] How little light gets under tree crowns
+//#define ASH_PARTICLES // Drifting ash and glowing embers in the air (off by default)
 #define ASH_DENSITY 1.0 // [0.5 1.0 1.5 2.0]
 
 // ---- World ----
