@@ -23,8 +23,7 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 - If the modpack does not freeze time, shadows from the "real" sun fade out instead of mismatching
 
 **World**
-- Black ash sky with drifting clouds lit red only toward the sun; optional drifting ash and embers
-  (off by default)
+- Black ash sky with drifting clouds lit red only toward the sun
 - Gloom under tree crowns: forests are starved of light, open fields unchanged (`CANOPY_DARKNESS`)
 - Blood / black oil / rusty ash water (`WATER_STYLE`) with slow viscous waves, a sun path
   on the surface and screen-space reflections of shores and ruins

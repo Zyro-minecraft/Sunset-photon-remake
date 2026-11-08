@@ -1,10 +1,9 @@
-// Deferred lighting: sun/ambient/torch/held light, SSAO, water, emissives, fog, ash.
+// Deferred lighting: sun/ambient/torch/held light, SSAO, water, emissives, fog.
 #include "/lib/settings.glsl"
 #include "/lib/common.glsl"
 #include "/lib/noise.glsl"
 #include "/lib/dims.glsl"
 #include "/lib/water.glsl"
-#include "/lib/ash.glsl"
 
 uniform sampler2D colortex0;
 uniform sampler2D colortex1;
@@ -219,24 +218,6 @@ void main() {
         color = mix(color, rainCol, rainMask * 0.35);
     }
 
-#ifdef ASH_PARTICLES
-#ifndef DIM_END
-    if (isEyeInWater == 0) {
-#ifdef DIM_NETHER
-        float ashAmount = 1.0;
-#else
-        float ashAmount = smoothstep(0.1, 0.6, float(eyeBrightnessSmooth.y) / 240.0); // none indoors / in caves
-#endif
-        vec4 ash = ashParticles(cameraPosition, dirWorld, min(d2, 30.0), t, ASH_DENSITY) * ashAmount;
-#ifdef DIM_NETHER
-        vec3 ashCol = srgbToLinear(fogColor) * 0.25;
-#else
-        vec3 ashCol = vec3(0.025, 0.02, 0.02) + sunLightColor() * 0.03 * pow(max(dot(dirWorld, sunW), 0.0), 4.0);
-#endif
-        color = mix(color, ashCol, ash.a) + ash.rgb * (1.0 - blind);
-    }
-#endif
-#endif
 
     outColor = vec4(color, 1.0);
 }
