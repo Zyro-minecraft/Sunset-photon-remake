@@ -12,7 +12,8 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 | ![village](docs/village.png) Village away from the sun | ![mobs](docs/mobs.png) Mobs cast long shadows |
 | ![rain](docs/rain.png) Ash rain swallows the sun | ![underwater](docs/underwater.png) Under the blood |
 | ![cave](docs/cave_torch.png) Cave, torch in hand | ![spider](docs/spider.png) Total darkness |
-| ![nether](docs/nether.png) Nether | ![end](docs/end.png) The End: eclipsed sun |
+| ![nether](docs/nether.png) Nether: haze over the lava sea | ![warped](docs/nether_warped.png) Warped forest keeps its teal |
+| ![end](docs/end.png) The End: eclipse and nebulae | ![end island](docs/end_island.png) Cold end stone, the dragon |
 | ![snow](docs/snow.png) Ash snow | ![reflections](docs/reflections.png) Ruins mirrored in the blood sea |
 | ![menu](docs/menu.png) Settings (EN/RU) | |
 
@@ -33,7 +34,10 @@ All screenshots are real in-game captures (Forge 1.20.1 + Oculus 1.8.0 + Embeddi
 - Colour drains from the world except red
 
 **Every situation**
-- Nether: lava-lit ambient, smouldering haze, embers; End: void sky with an eclipsed black sun
+- Nether: no sky, no sunset. Glowing haze hangs over the lava seas and thins out higher up; ceilings
+  catch the lava glow from below; every biome keeps its own hue (crimson, warped teal, soul blue)
+- End: eclipsed black sun with a writhing violet corona, drifting nebulae, tiny flickering stars,
+  violet void mist pooling below the islands, cold lilac end stone
 - Underwater (blood murk), in lava, in powder snow, Blindness / Darkness effects, Night Vision
 - Rain and snow as translucent ash sheets; overcast swallows the sun, fog thickens
 - Hand, glass, block entities, particles, enchantment glint, entity hurt flash handled separately

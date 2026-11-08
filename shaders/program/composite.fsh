@@ -146,11 +146,16 @@ void main() {
         ambient = (skyBase(normalize(vec3(sunW.x, 0.25, sunW.z)), sunW) * 0.25
                 + vec3(0.09, 0.05, 0.05) * (1.0 + 0.5 * rainStrength)) * canopy;
 #elif defined DIM_NETHER
+        vec3 nW = mat3(gbufferModelViewInverse) * n;
         ambient = srgbToLinear(fogColor) * 2.2 + vec3(0.07, 0.025, 0.015);
+        // ceilings and overhangs catch the glow of the lava seas below
+        ambient += vec3(0.30, 0.07, 0.012) * max(-nW.y, 0.0) * 0.8;
 #else
-        ambient = vec3(0.05, 0.035, 0.085);
+        vec3 nW = mat3(gbufferModelViewInverse) * n;
+        // cold violet light: from the void below and the eclipse's corona
+        ambient = vec3(0.045, 0.03, 0.08) + vec3(0.04, 0.012, 0.07) * max(-nW.y, 0.0);
         vec3 eV = mat3(gbufferModelView) * normalize(END_ECLIPSE_DIR);
-        direct = vec3(0.25, 0.15, 0.5) * max(dot(n, eV), 0.0) * 0.4; // corona rim light
+        direct = vec3(0.30, 0.17, 0.6) * max(dot(n, eV), 0.0) * 0.45; // corona rim light
 #endif
         float flicker = 0.92 + 0.08 * vnoise(vec2(t * 9.0, 0.0));
 #ifdef DIM_NETHER
@@ -158,8 +163,16 @@ void main() {
 #else
         vec3 blockLight = vec3(1.0, 0.48, 0.18) * pow(blockL, 4.0) * 2.4 * flicker;
 #endif
-        vec3 minLight = MIN_LIGHT * vec3(1.0, 0.82, 0.82) * (1.0 - 0.75 * skyL) + nightVision * 0.25;
+#ifdef DIM_END
+        vec3 minTint = vec3(0.7, 0.6, 1.0) * 0.5;
+#else
+        vec3 minTint = vec3(1.0, 0.82, 0.82);
+#endif
+        vec3 minLight = MIN_LIGHT * minTint * (1.0 - 0.75 * skyL) + nightVision * 0.25;
 
+#ifdef DIM_END
+        albedo = mix(vec3(luma(albedo)), albedo, 0.4) * vec3(0.85, 0.8, 1.0); // pale end stone turns cold
+#endif
         color = albedo * (direct + (ambient + minLight) * ao + blockLight * mix(1.0, ao, 0.5));
 
         // --- emissive surfaces ---
@@ -192,7 +205,8 @@ void main() {
 
         // --- air between eye and surface ---
         if (!isHand) {
-            float fog = dimFogAmount(dist, far);
+            float surfY = (gbufferModelViewInverse * vec4(vp, 1.0)).y + cameraPosition.y;
+            float fog = dimFogAmount(dist, far, surfY, cameraPosition.y);
             color = mix(color, dimFog(dirWorld, sunW), fog);
         }
     }

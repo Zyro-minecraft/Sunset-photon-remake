@@ -17,10 +17,11 @@ vec3 endSky(vec3 d, float t) {
     vec3 e = normalize(END_ECLIPSE_DIR);
     float up = d.y * 0.5 + 0.5;
     vec3 col = mix(vec3(0.004, 0.002, 0.007), vec3(0.025, 0.010, 0.040), pow(up, 1.5));
-    // faint dying stars
-    vec2 sp = vec2(atan(d.z, d.x) * 60.0, d.y * 120.0);
-    float star = step(0.995, hash12(floor(sp)));
-    col += vec3(0.6, 0.5, 0.8) * star * (0.4 + 0.6 * sin(t * 2.0 + hash12(floor(sp) + 3.0) * 30.0)) * 0.08;
+    // faint dying stars: tiny round points, slowly flickering
+    vec2 sp = vec2(atan(d.z, d.x), asin(clamp(d.y, -1.0, 1.0))) * 260.0;
+    vec2 cell = floor(sp);
+    float star = step(0.996, hash12(cell)) * smoothstep(0.3, 0.0, length(fract(sp) - 0.5));
+    col += vec3(0.75, 0.65, 1.0) * star * (0.5 + 0.5 * sin(t * 1.5 + hash12(cell + 3.0) * 30.0)) * 0.35;
     // eclipse: black disk with a violet-white corona that writhes
     float mu = dot(d, e);
     float ang = acos(clamp(mu, -1.0, 1.0));
@@ -30,6 +31,13 @@ vec3 endSky(vec3 d, float t) {
     float flare = fbm(normalize(q + 1e-6) * 2.5 + vec2(t * 0.05, -t * 0.03));
     float corona = exp(-max(ang - r, 0.0) / (r * (0.15 + 1.2 * flare * flare)));
     col += vec3(0.55, 0.35, 1.0) * corona * 1.6 + vec3(0.25, 0.1, 0.5) * pow(max(mu, 0.0), 12.0) * 0.4;
+    // slow violet nebulae drifting around the dead sun
+    vec2 nuv = d.xz / (abs(d.y) + 0.35) * 0.7 + vec2(t * 0.004, -t * 0.003);
+    float neb = fbm(nuv) * 0.65 + fbm(nuv * 2.7 + 11.0) * 0.35;
+    float nebMask = smoothstep(0.42, 0.85, neb) * (0.35 + 0.65 * pow(max(mu, 0.0) * 0.5 + 0.5, 3.0));
+    col += mix(vec3(0.05, 0.015, 0.09), vec3(0.16, 0.05, 0.22), neb) * nebMask * 1.3;
+    // the void below glows faintly, like something breathing down there
+    col += vec3(0.05, 0.015, 0.08) * smoothstep(0.0, -0.6, d.y) * (0.7 + 0.3 * sin(t * 0.4));
     col *= smoothstep(r * 0.985, r * 1.01, ang); // the black disk itself
     return col;
 }
@@ -37,7 +45,7 @@ vec3 endSky(vec3 d, float t) {
 // Sky as seen in direction d (world space).
 vec3 dimSky(vec3 d, vec3 sunW, float t) {
 #if defined DIM_NETHER
-    return srgbToLinear(fogColor) * 1.1;
+    return srgbToLinear(fogColor) * 2.4;
 #elif defined DIM_END
     return endSky(d, t);
 #else
@@ -51,10 +59,13 @@ vec3 dimSky(vec3 d, vec3 sunW, float t) {
 // Colour the air fades into, looking along d.
 vec3 dimFog(vec3 d, vec3 sunW) {
 #if defined DIM_NETHER
-    // smouldering haze, a little brighter low down where the lava seas are
-    return srgbToLinear(fogColor) * (1.1 + 0.6 * smoothstep(0.2, -0.4, d.y)) + vec3(0.012, 0.003, 0.002);
+    // the biome's own haze (crimson, warped teal, soul blue, basalt grey), brighter looking down
+    // toward the lava seas
+    float down = smoothstep(0.2, -0.5, d.y);
+    return srgbToLinear(fogColor) * (2.2 + 1.5 * down) + vec3(0.05, 0.010, 0.0) * down + vec3(0.012, 0.003, 0.002);
 #elif defined DIM_END
-    return vec3(0.012, 0.006, 0.02);
+    // violet void mist, glowing more toward the abyss below the islands
+    return mix(vec3(0.014, 0.007, 0.024), vec3(0.05, 0.016, 0.08), smoothstep(0.1, -0.6, d.y));
 #else
     vec3 fd = normalize(vec3(d.x, clamp(d.y, 0.0, 0.1), d.z));
     vec3 f = skyBase(fd, sunW) * 0.6;
@@ -63,11 +74,17 @@ vec3 dimFog(vec3 d, vec3 sunW) {
 }
 
 // Fog amount for a surface dist blocks away (far = render distance).
-float dimFogAmount(float dist, float farPlane) {
+// worldY = height of the surface, eyeY = height of the camera.
+float dimFogAmount(float dist, float farPlane, float worldY, float eyeY) {
+    float avgY = 0.5 * (worldY + eyeY);
 #if defined DIM_NETHER
-    float f = 1.0 - exp(-dist * 0.018 * FOG_DENSITY);
+    // thick glowing haze hangs over the lava seas (y ~ 31) and thins out higher up
+    float lavaHaze = exp(-max(avgY - 31.0, 0.0) / 12.0);
+    float f = 1.0 - exp(-dist * (0.012 + 0.03 * lavaHaze) * FOG_DENSITY);
 #elif defined DIM_END
-    float f = 1.0 - exp(-dist * 0.008 * FOG_DENSITY);
+    // void mist pools below the islands
+    float voidMist = exp(-max(avgY - 40.0, 0.0) / 15.0);
+    float f = 1.0 - exp(-dist * (0.006 + 0.02 * voidMist) * FOG_DENSITY);
 #else
     float f = 1.0 - exp(-dist * (0.006 + 0.012 * rainStrength) * FOG_DENSITY);
 #endif

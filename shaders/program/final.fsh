@@ -90,9 +90,17 @@ void main() {
 #ifdef DIM_END
     redness = max(redness, clamp((min(col.r, col.b) - col.g) * 4.0, 0.0, 1.0));
 #endif
+#ifdef DIM_NETHER
+    col = mix(vec3(l), col, mix(0.75, 1.15, redness)); // crimson, warped teal, soul blue all survive
+#else
     col = mix(vec3(l), col, mix(0.30, 1.15, redness));
+#endif
     col = pow(max(col, 0.0), vec3(1.04)); // saturation boost can push channels negative -> NaN
+#ifdef DIM_END
+    col *= mix(vec3(0.94, 0.88, 1.12), vec3(1.0), smoothstep(0.3, 0.9, l)); // cold violet shadows and midtones
+#else
     col *= mix(vec3(1.0), vec3(1.05, 0.92, 0.92), 1.0 - smoothstep(0.0, 0.25, l));
+#endif
 
     col = linearToSrgb(col);
 
